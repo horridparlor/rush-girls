@@ -78,11 +78,11 @@ function getCards($connection)
         . "%' OR LOWER(card.flavourText) LIKE '%" . $searchString
         . "%' OR LOWER(material1.name) LIKE '%" . $searchString
         . "%' OR LOWER(material2.name) LIKE '%" . $searchString
-        . "')";
+        . "%')";
     }
     $sql .= "
     ORDER BY card.name
-    LIMIT 30
+    LIMIT 84
     ";
     $connection = $database->connect();
     $result = $connection->query($sql);
