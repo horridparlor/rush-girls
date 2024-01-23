@@ -49,10 +49,12 @@ function getCards($connection)
         $sql .= " AND card.class_id = " . $classId;
     }
     if ($minLevel !== null) {
-        $sql .= " AND card.level >= " . $minLevel;
+        $sql .= " AND (card.level >= " . $minLevel
+        . " OR card.triggerMinLevel <= " . $minLevel . ")";
     }
     if ($maxLevel !== null) {
-        $sql .= " AND card.level <= " . $maxLevel;
+        $sql .= " AND (card.level <= " . $maxLevel
+        . " OR card.triggerMaxLevel >= " . $maxLevel . ")";
     }
     if ($minAtk !== null) {
         $sql .= " AND card.atk >= " . $minAtk;
@@ -80,7 +82,7 @@ function getCards($connection)
     }
     $sql .= "
     ORDER BY card.name
-    LIMIT 32
+    LIMIT 30
     ";
     $connection = $database->connect();
     $result = $connection->query($sql);
