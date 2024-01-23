@@ -78,6 +78,10 @@ function getCards($connection)
         . "%' OR LOWER(material2.name) LIKE '%" . $searchString
         . "')";
     }
+    $sql .= "
+    ORDER BY card.name
+    LIMIT 32
+    ";
     $connection = $database->connect();
     $result = $connection->query($sql);
     if ($result->num_rows > 0) {
@@ -85,7 +89,7 @@ function getCards($connection)
         $cardNames = array();
         $cards = array();
         while ($row = $result->fetch_assoc()) {
-            $row['data'] = base64_encode($row['data']); // Encode the blob data
+            $row['data'] = base64_encode($row['data']);
             $countOfCards += 1;
             $cardNames[] = $row['name'];
             $cards[] = $row;
