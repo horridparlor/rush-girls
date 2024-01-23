@@ -16,7 +16,7 @@ function getCards($connection)
     $minDef = $_GET["minDef"];
     $maxDef = $_GET["maxDef"];
     $isAce = $_GET["isAce"];
-    $searchString = $_GET["searchString"];
+    $searchString = urldecode($_GET["searchString"]);
     
     
     $database = new Database();
