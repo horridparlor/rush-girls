@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Card Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="index.js" defer></script>
+</head>
+<body>
+    <div id="filters">
+        <select id="expansion-filter">
+            <option value="">Expansion</option>
+            <option value="1">Set 1</option>
+            <option value="2">Set 2</option>
+        </select>
+        <input type="text" id="search-bar" placeholder="Search">
+        <input type="number" id="min-level" min="0" max="10" placeholder="Min Level">
+        <input type="number" id="max-level" min="0" max="10" placeholder="Max Level">
+        <input type="number" id="min-atk" min="0" max="3000" placeholder="Min ATK">
+        <input type="number" id="max-atk" min="0" max="3000" placeholder="Max ATK">
+        <input type="number" id="min-def" min="0" max="3000" placeholder="Min DEF">
+        <input type="number" id="max-def" min="0" max="3000" placeholder="Max DEF">
+        <select id="class-selector">
+            <option value="">Class</option>
+            <option value="1">Dragon</option>
+            <option value="2">Kawaii</option>
+            <option value="3">Slime</option>
+            <option value="4">Sparks</option>
+            <option value="5">Zombie</option>
+        </select>
+        <select id="card-type-selector">
+            <option value="">Card type</option>
+            <option value="1">Normal</option>
+            <option value="7">Effect</option>
+            <option value="4">Fusion</option>
+            <option value="6">Revenge</option>
+            <option value="2">Spell</option>
+            <option value="3">Trap</option>
+            <option value="5">Ritual</option>
+        </select>
+        <select id="is-ace-selector">
+            <option value="">Ace</option>
+            <option value="1">Is Ace</option>
+            <option value="0">Not Ace</option>
+        </select>
+        <select id="cost-selector">
+            <option value="">Cost</option>
+            <option value="2">Discard</option>
+            <option value="3">Mill</option>
+            <option value="9">None</option>
+        </select>
+        <select id="effect-selector">
+            <option value="">Effect</option>
+            <option value="13">Life-gain</option>
+            <option value="8">Destruction</option>
+            <option value="17">MST</option>
+        </select>
+        <button id="clear-button" class="clear-button">Clear</button>
+        <button id="search-button">Search</button>
+    </div>
+    <div id="loading-message">Loading cards...</div>
+    <div id="card-container"></div>
+    
+    <div id="modal" class="modal">
+        <span id="close-modal" class="close">&times;</span>
+        <img class="modal-content" id="modal-image">
+        <div id="modal-caption"></div>
+    </div>
+</body>
+</html>
+
