@@ -17,6 +17,7 @@ function getCards()
     $minDef = $_GET["minDef"];
     $maxDef = $_GET["maxDef"];
     $isAce = $_GET["isAce"];
+    $legalityId = $_GET["legalityId"];
     $searchString = $_GET["searchString"];
     
     
@@ -69,6 +70,13 @@ function getCards()
     }
     if ($isAce !== null) {
         $sql .= " AND card.isAce = " . $isAce;
+    }
+    if ($legalityId !== null) {
+        if ($legalityId == 0) {
+            $sql .= " AND card.legality_id IS NULL";
+        } else {
+            $sql .= " AND card.legality_id = " . $legalityId;
+        }
     }
     if ($searchString !== null) {
         $searchString = urldecode($searchString);

@@ -35,7 +35,8 @@ function clearFilters() {
         'card-type-selector',
         'is-ace-selector',
         'cost-selector',
-        'effect-selector'
+        'effect-selector',
+        'legality-selector'
     ];
 
     filterIds.forEach(id => {
@@ -58,6 +59,7 @@ function getCards() {
     const isAce = document.getElementById('is-ace-selector').value;
     const cost = document.getElementById('cost-selector').value;
     const effect = document.getElementById('effect-selector').value;
+    const legality = document.getElementById('legality-selector').value;
 
     const rawParams = new URLSearchParams({
         expansionId: expansion,
@@ -72,7 +74,8 @@ function getCards() {
         cardTypeId: cardType,
         isAce: isAce,
         costTypeId: cost,
-        effectTypeId: effect
+        effectTypeId: effect,
+        legalityId: legality
     });
     
     const urlParams = new URLSearchParams();
