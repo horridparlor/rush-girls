@@ -1,8 +1,9 @@
 <?php
+header('Content-Type: application/json');
 
 include("../system/Database.php");
 
-function getCards($connection)
+function getCards()
 {
     $expansionId = $_GET["expansionId"];
     $cardTypeId = $_GET["cardTypeId"];
@@ -16,15 +17,13 @@ function getCards($connection)
     $minDef = $_GET["minDef"];
     $maxDef = $_GET["maxDef"];
     $isAce = $_GET["isAce"];
-    $searchString = urldecode($_GET["searchString"]);
+    $searchString = $_GET["searchString"];
     
     
     $database = new Database();
     $sql = "
-        SELECT card.id, card.name, file.data
+        SELECT card.id, card.name
         FROM card
-        JOIN file
-            ON card.image_id = file.id
         JOIN expansion
             ON card.expansion_id = expansion.id
         LEFT JOIN card material1
@@ -72,6 +71,7 @@ function getCards($connection)
         $sql .= " AND card.isAce = " . $isAce;
     }
     if ($searchString !== null) {
+        $searchString = urldecode($searchString);
         $sql .= " AND (LOWER(card.name) LIKE '%" . $searchString
         . "%' OR LOWER(card.cost) LIKE '%" . $searchString
         . "%' OR LOWER(card.effect) LIKE '%" . $searchString
@@ -87,19 +87,13 @@ function getCards($connection)
     $connection = $database->connect();
     $result = $connection->query($sql);
     if ($result->num_rows > 0) {
-        $countOfCards = 0;
-        $cardNames = array();
         $cards = array();
         while ($row = $result->fetch_assoc()) {
-            $row['data'] = base64_encode($row['data']);
-            $countOfCards += 1;
-            $cardNames[] = $row['name'];
             $cards[] = $row;
         }
         return json_encode(array(
             "status" => "Success",
-            "countOfCards" => $countOfCards,
-            "cardNames" => $cardNames,
+            "countOfCards" => count($cards),
             "cards" => $cards
         ));
     } else {
@@ -107,7 +101,7 @@ function getCards($connection)
     }
 }
 
-echo getCards($connection);
+echo getCards();
 
 ?>
 

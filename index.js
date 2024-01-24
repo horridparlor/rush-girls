@@ -1,3 +1,5 @@
+const IMAGES_STORAGE = 'cardImages';
+
 function getExpansionIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
     let expansionId = urlParams.get('expansion');
@@ -123,12 +125,15 @@ function showModal(imageSrc, caption) {
 function displayCards(cards) {
     const container = document.getElementById('card-container');
     container.innerHTML = '';
+    if (!sessionStorage.getItem(IMAGES_STORAGE)) {
+        sessionStorage.setItem(IMAGES_STORAGE, JSON.stringify({}));
+    }
     cards.forEach(card => {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card';
         cardDiv.title = card.name;
         const img = new Image();
-        img.src = 'data:image/jpeg;base64,' + card.data;
+        img.id = `card-image-${card.id}`;
         img.alt = card.name;
         cardDiv.appendChild(img);
 
@@ -137,7 +142,41 @@ function displayCards(cards) {
         };
 
         container.appendChild(cardDiv);
+        updateCardImage(card.id);
     });
+}
+
+function updateCardImage(id) {
+    const cardImages = JSON.parse(sessionStorage.getItem(IMAGES_STORAGE));
+    const img = document.getElementById(`card-image-${id}`);
+
+    if (cardImages[id]) {
+        img.src = cardImages[id];
+    } else {
+        getCardImage(id).then(data => {
+            const imageData = 'data:image/jpeg;base64,' + data;
+            img.src = imageData;
+
+            cardImages[id] = imageData;
+            sessionStorage.setItem(IMAGES_STORAGE, JSON.stringify(cardImages));
+        });
+    }
+}
+
+function getCardImage(cardId) {
+    return fetch(`/api/rush-girls/getCardImage.php?cardId=${cardId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network failure.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            return data.imageData;
+        })
+        .catch(error => {
+            console.error('Error fetching card image:', error);
+        });
 }
 
 window.onload = () => {
