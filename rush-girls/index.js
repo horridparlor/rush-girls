@@ -1,4 +1,8 @@
 const IMAGES_STORAGE = 'cardImages';
+const API_ENDPOINT = '../api/rush-girls/';
+const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
+
+let currentCardId;
 
 function getExpansionIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -85,7 +89,7 @@ function getCards() {
         }
     });
     
-    fetch('/api/rush-girls/getCards.php?' + urlParams.toString())
+    fetch(API_ENDPOINT + 'getCards.php?' + urlParams.toString())
         .then(response => response.json())
         .then(data => {
             showLoadingMessage(false);
@@ -104,13 +108,14 @@ function getCards() {
         });
 }
 
-function showModal(imageSrc, caption) {
+function showModal(imageSrc, card) {
     const modal = document.getElementById("modal");
     const modalImg = document.getElementById("modal-image");
     const captionText = document.getElementById("modal-caption");
     modal.style.display = "block";
     modalImg.src = imageSrc;
-    captionText.innerHTML = caption;
+    captionText.innerHTML = card.name;
+    currentCardId = card.id;
 
     const span = document.getElementById("close-modal");
 
@@ -141,7 +146,7 @@ function displayCards(cards) {
         cardDiv.appendChild(img);
 
         cardDiv.onclick = () => {
-            showModal(img.src, card.name);
+            showModal(img.src, card);
         };
 
         container.appendChild(cardDiv);
@@ -167,7 +172,7 @@ function updateCardImage(id) {
 }
 
 function getCardImage(cardId) {
-    return fetch(`/api/rush-girls/getCardImage.php?cardId=${cardId}`)
+    return fetch(API_ENDPOINT + `getCardImage.php?cardId=${cardId}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network failure.');
@@ -182,8 +187,81 @@ function getCardImage(cardId) {
         });
 }
 
+function modalInit() {
+    const modal = document.getElementById('modal');
+    const changeImageButton = document.getElementById('change-image-button');
+    const imageInput = document.getElementById('image-input');
+
+    changeImageButton.addEventListener('click', () => {
+        imageInput.click();
+    });
+
+    imageInput.addEventListener('change', async (event) => {
+        if (event.target.files && event.target.files[0]) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async (e) => {
+                const imageData = e.target.result;
+                const modalImage = document.getElementById('modal-image');
+                modalImage.src = imageData;
+
+                await updateImageOnServer(currentCardId, imageData);
+            };
+
+            reader.readAsDataURL(file);
+        }
+    });
+}
+
+async function updateImageOnServer(cardId, imageData) {
+    const formData = new FormData();
+    formData.append('cardId', cardId);
+    const imageBlob = dataURLtoBlob(imageData);
+    formData.append('imageData', imageBlob);
+
+    try {
+        const response = await fetch(ADMIN_ENDPOINT + 'updateImage.php', {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) {
+            showToast(`HTTP error uploading image! status: ${response.status}`);
+        } else {
+            showToast('Image updated successfully');
+        }
+    } catch (error) {
+        showToast('Error updating image: ' + error);
+    }
+}
+
+function showToast(message, duration = 3000) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.className = 'toast';
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        document.body.removeChild(toast);
+    }, duration);
+}
+
+function dataURLtoBlob(dataURL) {
+    const byteString = atob(dataURL.split(',')[1]);
+    const mimeString = dataURL.split(',')[0].split(':')[1].split(';')[0];
+
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+
+    return new Blob([ab], {type: mimeString});
+}
+
 window.onload = () => {
     document.getElementById('clear-button').addEventListener('click', clearFilters);
     document.getElementById('search-button').addEventListener('click', getCards);
+    modalInit();
     getCards();
 };

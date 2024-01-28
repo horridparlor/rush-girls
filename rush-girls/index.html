@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Card Gallery</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="index.js" defer></script>
+</head>
+<body>
+<div id="filters">
+    <select id="expansion-filter">
+        <option value="">Expansion</option>
+        <option value="1">Set 1</option>
+        <option value="2">Set 2</option>
+    </select>
+    <input type="text" id="search-bar" placeholder="Search">
+    <input type="number" id="min-level" min="0" max="10" placeholder="Min Level">
+    <input type="number" id="max-level" min="0" max="10" placeholder="Max Level">
+    <input type="number" id="min-atk" min="0" max="3000" placeholder="Min ATK">
+    <input type="number" id="max-atk" min="0" max="3000" placeholder="Max ATK">
+    <input type="number" id="min-def" min="0" max="3000" placeholder="Min DEF">
+    <input type="number" id="max-def" min="0" max="3000" placeholder="Max DEF">
+    <select id="class-selector">
+        <option value="">Class</option>
+        <option value="1">Dragon</option>
+        <option value="2">Kawaii</option>
+        <option value="3">Slime</option>
+        <option value="4">Sparks</option>
+        <option value="5">Zombie</option>
+    </select>
+    <select id="card-type-selector">
+        <option value="">Card type</option>
+        <option value="1">Normal</option>
+        <option value="7">Effect</option>
+        <option value="4">Fusion</option>
+        <option value="6">Revenge</option>
+        <option value="2">Spell</option>
+        <option value="3">Trap</option>
+        <option value="5">Ritual</option>
+    </select>
+    <select id="is-ace-selector">
+        <option value="">Ace</option>
+        <option value="1">Is Ace</option>
+        <option value="0">Not Ace</option>
+    </select>
+    <select id="cost-selector">
+        <option value="">Cost</option>
+        <option value="18">Attacks</option>
+        <option value="14">Continuous</option>
+        <option value="10">Control</option>
+        <option value="15">Destroy</option>
+        <option value="2">Discard</option>
+        <option value="19">Fights</option>
+        <option value="8">Flipped</option>
+        <option value="11">In grave</option>
+        <option value="3">Mill</option>
+        <option value="13">No monsters</option>
+        <option value="9">None</option>
+        <option value="7">Only this</option>
+        <option value="4">Pay life</option>
+        <option value="17">Position</option>
+        <option value="12">Reshuffle</option>
+        <option value="5">Sacrifice</option>
+        <option value="1">Summons</option>
+        <option value="16">Target</option>
+        <option value="6">This turn</option>
+    </select>
+    <select id="effect-selector">
+        <option value="">Effect</option>
+        <option value="9">Atk gain</option>
+        <option value="10">Atk lose</option>
+        <option value="3">Burn</option>
+        <option value="15">Chain-attack</option>
+        <option value="11">Def gain</option>
+        <option value="12">Def lose</option>
+        <option value="8">Destroy</option>
+        <option value="7">Discard</option>
+        <option value="5">Double-tribute</option>
+        <option value="2">Double</option>
+        <option value="1">Draw</option>
+        <option value="23">Flip</option>
+        <option value="13">Gain life</option>
+        <option value="19">Mill</option>
+        <option value="17">MST</option>
+        <option value="24">No direct</option>
+        <option value="20">Pierce</option>
+        <option value="21">Position</option>
+        <option value="22">Reborn</option>
+        <option value="18">Reshuffle</option>
+        <option value="16">Restack</option>
+        <option value="4">Retrieval</option>
+        <option value="14">Stat-swap</option>
+        <option value="6">Steal</option>
+        <option value="25">Top summon</option>
+    </select>
+    <select id="legality-selector">
+        <option value="">Legality</option>
+        <option value="0">Unlimited</option>
+        <option value="1">Banned</option>
+    </select>
+    <button id="clear-button" class="clear-button">Clear</button>
+    <button id="search-button">Search</button>
+</div>
+<div id="loading-message">Loading cards...</div>
+<div id="card-container"></div>
+
+<div id="modal" class="modal">
+    <span id="close-modal" class="close">&times;</span>
+    <img class="modal-content" id="modal-image">
+    <div id="modal-caption"></div>
+    <input type="file" id="image-input" accept="image/*" style="display: none;">
+    <button id="change-image-button">Change Image</button>
+</div>
+</body>
+</html>
