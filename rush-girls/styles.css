@@ -150,3 +150,30 @@ body {
     border-radius: 5px;
     z-index: 1000;
 }
+
+#prev-page, #next-page {
+    font-size: 18px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#prev-page {
+    position: fixed;
+    left: 10px;
+    bottom: 10px;
+}
+
+#next-page {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+}
+
+#prev-page:hover, #next-page:hover {
+    background-color: #0056b3;
+}

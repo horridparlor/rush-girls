@@ -49,7 +49,6 @@ function getCards()
         )";
         $equalTypeId = match (intval($cardTypeId)) {
             1 => 8,
-            2 => 8,
             3 => 5,
             default => $cardTypeId,
         };

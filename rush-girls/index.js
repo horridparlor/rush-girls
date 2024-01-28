@@ -1,8 +1,11 @@
 const IMAGES_STORAGE = 'cardImages';
 const API_ENDPOINT = '../api/rush-girls/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
+const CARDS_PER_PAGE = 21;
 
 let currentCardId;
+let cards;
+let currentPage;
 
 function getExpansionIdFromUrl() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -97,7 +100,9 @@ function getCards() {
                  const cardContainer = document.getElementById('card-container');
                 cardContainer.innerHTML = '<div class="no-cards-found">No cards found</div>';
             } else {
-                displayCards(data.cards);
+                cards = data.cards;
+                currentPage = 0;
+                displayCards();
             }
         })
         .catch(error => {
@@ -130,13 +135,15 @@ function showModal(imageSrc, card) {
     };
 }
 
-function displayCards(cards) {
+function displayCards() {
     const container = document.getElementById('card-container');
     container.innerHTML = '';
     if (!sessionStorage.getItem(IMAGES_STORAGE)) {
         sessionStorage.setItem(IMAGES_STORAGE, JSON.stringify({}));
     }
-    cards.forEach(card => {
+    const startIndex = currentPage * CARDS_PER_PAGE
+    cardsOnPage = cards.slice(startIndex, startIndex + CARDS_PER_PAGE );
+    cardsOnPage.forEach(card => {
         const cardDiv = document.createElement('div');
         cardDiv.className = 'card';
         cardDiv.title = card.name;
@@ -259,9 +266,29 @@ function dataURLtoBlob(dataURL) {
     return new Blob([ab], {type: mimeString});
 }
 
+function pageArrowsInit() {
+    document.getElementById('prev-page').addEventListener('click', prevPage);
+    document.getElementById('next-page').addEventListener('click', nextPage);
+}
+
+function prevPage() {
+    if (currentPage > 0) {
+        currentPage -= 1;
+        displayCards();
+    }
+}
+
+function nextPage() {
+    if (cards.length > (currentPage + 1) * CARDS_PER_PAGE) {
+        currentPage += 1;
+        displayCards();
+    }
+}
+
 window.onload = () => {
     document.getElementById('clear-button').addEventListener('click', clearFilters);
     document.getElementById('search-button').addEventListener('click', getCards);
     modalInit();
     getCards();
+    pageArrowsInit();
 };
