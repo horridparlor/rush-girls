@@ -43,13 +43,26 @@ function getCards()
         $sql .= " AND card.expansion_id = :expansionId";
     }
     if ($cardTypeId !== null) {
-        $sql .= " AND card.type_id = :cardTypeId";
-        $replacements['cardTypeId'] = ['value' => $cardTypeId, 'type' => PDO::PARAM_INT];
+        $sql .= " AND (
+            card.type_id = :cardTypeId
+            OR card.type_id = :equalTypeId
+        )";
+        $equalTypeId = match (intval($cardTypeId)) {
+            1 => 8,
+            2 => 8,
+            3 => 5,
+            default => $cardTypeId,
+        };
+        $replacements = array_merge($replacements, array(
+            'cardTypeId' => ['value' => $cardTypeId, 'type' => PDO::PARAM_INT],
+            'equalTypeId' => ['value' => $equalTypeId, 'type' => PDO::PARAM_INT]
+        ));
     }
     if ($effectTypeId !== null) {
         $sql .= " AND (
             card.effectType_id = :effectTypeId
             OR card.effectType2_id = :effectTypeId
+            OR card.effectType3_id = :effectTypeId
         )";
         $replacements['effectTypeId'] = ['value' => $effectTypeId, 'type' => PDO::PARAM_INT];
     }
