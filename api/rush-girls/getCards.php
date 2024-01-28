@@ -31,12 +31,16 @@ function getCards()
             ON card.primaryMaterial_id = material1.id
         LEFT JOIN card material2
             ON card.secondaryMaterial_id = material2.id
-        WHERE expansion.isReleased = 1
+        WHERE (
+            expansion.isReleased = 1 
+            OR expansion.id = :expansionId
+        )
     SQL;
-    $replacements = array();
+    $replacements = array(
+        'expansionId' => ['value' => $expansionId ?? -1, 'type' => PDO::PARAM_INT]
+    );
     if ($expansionId !== null) {
         $sql .= " AND card.expansion_id = :expansionId";
-        $replacements['expansionId'] = ['value' => $expansionId, 'type' => PDO::PARAM_INT];
     }
     if ($cardTypeId !== null) {
         $sql .= " AND card.type_id = :cardTypeId";
@@ -96,21 +100,20 @@ function getCards()
     }
     if ($legalityId !== null) {
         if ($legalityId == 0) {
-            $sql .= " AND card.legality_id IS NULL";
+            $sql .= " AND 1 = 1";
         } else {
-            $sql .= " AND card.legality_id = :legalityId";
-            $replacements['legalityId'] = ['value' => $legalityId, 'type' => PDO::PARAM_INT];
+            $sql .= " AND 1 = 2";
         }
     }
     if ($searchString !== null) {
         $searchString = urldecode($searchString);
         $sql .= " AND (
-            LOWER(card.name) LIKE '%:searchString%'
-            OR LOWER(card.cost) LIKE '%:searchString%'
-            OR LOWER(card.effect) LIKE '%:searchString%'
-            OR LOWER(card.flavourText) LIKE '%:searchString%'
-            OR LOWER(material1.name) LIKE '%:searchString%'
-            OR LOWER(material2.name) LIKE '%:searchString%'
+            LOWER(card.name) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(card.cost) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(card.effect) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(card.flavourText) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(material1.name) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(material2.name) LIKE CONCAT('%', :searchString, '%')
         )";
         $replacements['searchString'] = ['value' => $searchString, 'type' => PDO::PARAM_STR];
     }
