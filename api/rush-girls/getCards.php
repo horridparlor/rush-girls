@@ -2,6 +2,7 @@
 header('Content-Type: application/json');
 
 include("../system/Database.php");
+include("../system/cardTypes.php");
 
 function getCards()
 {
@@ -47,10 +48,16 @@ function getCards()
             card.type_id = :cardTypeId
             OR card.type_id = :equalTypeId
         )";
-        $equalTypeId = match (intval($cardTypeId)) {
-            1 => 8,
-            3 => 5,
+        $cardTypeId = intval($cardTypeId);
+        $equalTypeId = match ($cardTypeId) {
+            CARD_TYPE_NORMAL => CARD_TYPE_PENDULUM,
+            CARD_TYPE_TRAP => CARD_TYPE_RITUAL,
+            CARD_TYPE_MONSTER => CARD_TYPE_EFFECT,
             default => $cardTypeId,
+        };
+        $cardTypeId = match ($cardTypeId) {
+            CARD_TYPE_MONSTER => CARD_TYPE_NORMAL,
+            CARD_TYPE_NORMAL_TRAP => CARD_TYPE_TRAP
         };
         $replacements = array_merge($replacements, array(
             'cardTypeId' => ['value' => $cardTypeId, 'type' => PDO::PARAM_INT],
