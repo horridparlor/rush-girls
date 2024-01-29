@@ -24,7 +24,11 @@ function getCards()
     
     $database = new Database();
     $sql = <<<SQL
-        SELECT card.id, card.name
+        SELECT card.id, card.name, type.name as type,
+               class.name as class, card.level, card.atk, card.isAce,
+               card.def, material1.id as material1_id, material1.name as material1_name,
+               material2.id as material2_id, material2.name as material2_name,
+               card.cost, card.effect, card.flavourText
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
@@ -32,6 +36,10 @@ function getCards()
             ON card.primaryMaterial_id = material1.id
         LEFT JOIN card material2
             ON card.secondaryMaterial_id = material2.id
+        JOIN cardType type
+            ON card.type_id = type.id
+        LEFT JOIN class
+            ON card.class_id = class.id
         WHERE (
             expansion.isReleased = 1 
             OR expansion.id = :expansionId
