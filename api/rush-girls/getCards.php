@@ -98,14 +98,20 @@ function getCards()
     if ($minLevel !== null) {
         $sql .= " AND (
             card.level >= :minLevel
-            OR card.triggerMinLevel <= :minLevel
+            OR (
+                card.triggerMinLevel <= :minLevel
+                AND card.triggerMaxLevel >= :minLevel
+            )
         )";
         $replacements['minLevel'] = ['value' => $minLevel, 'type' => PDO::PARAM_INT];
     }
     if ($maxLevel !== null) {
         $sql .= " AND (
             card.level <= :maxLevel
-            OR card.triggerMaxLevel >= :maxLevel
+            OR (
+                card.triggerMaxLevel >= :maxLevel
+                AND card.triggerMinLevel <= :maxLevel
+            )
         )";
         $replacements['maxLevel'] = ['value' => $maxLevel, 'type' => PDO::PARAM_INT];
     }
@@ -127,7 +133,7 @@ function getCards()
     }
     if ($isAce !== null) {
         $sql .= " AND card.isAce = :isAce";
-        $replacements['isAce'] = ['value' => $isAce, 'type' => PDO::PARAM_BOOL];
+        $replacements['isAce'] = ['value' => $isAce, 'type' => PDO::PARAM_INT];
     }
     if ($legalityId !== null) {
         if ($legalityId == 0) {
