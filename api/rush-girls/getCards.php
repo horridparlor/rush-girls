@@ -65,7 +65,8 @@ function getCards()
         };
         $cardTypeId = match ($cardTypeId) {
             CARD_TYPE_MONSTER => CARD_TYPE_NORMAL,
-            CARD_TYPE_NORMAL_TRAP => CARD_TYPE_TRAP
+            CARD_TYPE_NORMAL_TRAP => CARD_TYPE_TRAP,
+            default => $cardTypeId,
         };
         $replacements = array_merge($replacements, array(
             'cardTypeId' => ['value' => $cardTypeId, 'type' => PDO::PARAM_INT],
@@ -88,7 +89,10 @@ function getCards()
         $replacements['costTypeId'] = ['value' => $costTypeId, 'type' => PDO::PARAM_INT];
     }
     if ($classId !== null) {
-        $sql .= " AND card.class_id = :classId";
+        $sql .= " AND (
+            card.class_id = :classId
+            OR card.class2_id = :classId
+        )";
         $replacements['classId'] = ['value' => $classId, 'type' => PDO::PARAM_INT];
     }
     if ($minLevel !== null) {
