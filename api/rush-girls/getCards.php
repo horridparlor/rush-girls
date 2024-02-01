@@ -6,21 +6,23 @@ include("../system/cardTypes.php");
 
 function getCards()
 {
-    $expansionId = $_GET["expansionId"];
-    $cardTypeId = $_GET["cardTypeId"];
-    $deckId = $_GET["deckId"];
-    $effectTypeId = $_GET["effectTypeId"];
-    $costTypeId = $_GET["costTypeId"];
-    $classId = $_GET["classId"];
-    $minLevel = $_GET["minLevel"];
-    $maxLevel = $_GET["maxLevel"];
-    $minAtk = $_GET["minAtk"];
-    $maxAtk = $_GET["maxAtk"];
-    $minDef = $_GET["minDef"];
-    $maxDef = $_GET["maxDef"];
-    $specialId = $_GET["specialId"];
-    $legalityId = $_GET["legalityId"];
-    $searchString = $_GET["searchString"];
+    $expansionId = Database::getIntParam("expansionId");
+    $cardTypeId = Database::getIntParam("cardTypeId");
+    $deckId = Database::getIntParam("deckId");
+    $effectTypeId = Database::getIntParam("effectTypeId");
+    $costTypeId = Database::getIntParam("costTypeId");
+    $classId = Database::getIntParam("classId");
+    $minLevel = Database::getIntParam("minLevel");
+    $maxLevel = Database::getIntParam("maxLevel");
+    $minAtk = Database::getIntParam("minAtk");
+    $maxAtk = Database::getIntParam("maxAtk");
+    $minDef = Database::getIntParam("minDef");
+    $maxDef = Database::getIntParam("maxDef");
+    $specialId = Database::getIntParam("specialId");
+    $legalityId = Database::getIntParam("legalityId");
+    $searchString = Database::getStringParam("searchString");
+    $sortId = Database::getIntParam("sortId");
+    $orderId = Database::getIntParam("orderId");
     
     
     $database = new Database();
@@ -53,7 +55,6 @@ function getCards()
         $sql .= " AND card.expansion_id = :expansionId";
     }
     if ($cardTypeId !== null) {
-        $cardTypeId = intval($cardTypeId);
         switch ($cardTypeId) {
             case CARD_TYPE_MONSTER:
                 $sql .= CARD_TYPE_IN . Database::arrify(array(
@@ -81,7 +82,6 @@ function getCards()
         }
     }
     if ($deckId !== null) {
-        $deckId = intval($deckId);
         switch ($deckId) {
             case DECK_MAIN:
                 $sql .= CARD_TYPE_IN . Database::arrify(array(
@@ -159,12 +159,11 @@ function getCards()
         $replacements['maxDef'] = ['value' => $maxDef, 'type' => PDO::PARAM_INT];
     }
     if ($specialId !== null) {
-        $specialId = intval($specialId);
-        if ($specialId == 4) {
+        if ($specialId == NOT_ACE) {
             $sql .= " AND (
                 card.special_id IS NULL
-                OR card.special_id != 1
-            ) ";
+                OR card.special_id != " . IS_ACE .
+            ") ";
         } else {
             $sql .= " AND card.special_id = :specialId";
             $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
@@ -178,7 +177,6 @@ function getCards()
         }
     }
     if ($searchString !== null) {
-        $searchString = urldecode($searchString);
         $sql .= " AND (
             LOWER(card.name) LIKE CONCAT('%', :searchString, '%')
             OR LOWER(card.cost) LIKE CONCAT('%', :searchString, '%')
@@ -189,10 +187,34 @@ function getCards()
         )";
         $replacements['searchString'] = ['value' => $searchString, 'type' => PDO::PARAM_STR];
     }
-    $sql .= "
-    ORDER BY card.name
-    LIMIT 9999
-    ";
+    $order = $orderId == ORDER_ASC ? 'ASC' : 'DESC';
+    $orderExtend = ' ' . $order . ',';
+    $sql .= " ORDER BY ";
+    switch ($sortId) {
+        case SORT_ATK:
+            $sql .= "card.atk" . $orderExtend;
+            break;
+        case SORT_DEF:
+            $sql .= "card.def" . $orderExtend;
+            break;
+        case SORT_LEVEL:
+            $sql .= "card.level" . $orderExtend;
+            break;
+        case SORT_CLASS:
+            $sql .= "card.class_id" . $orderExtend;
+            break;
+        case SORT_TYPE:
+            $sql .= "card.type_id" . $orderExtend;
+            break;
+        case SORT_EXPANSION:
+            $sql .= "card.expansion_id" . $orderExtend;
+            break;
+        case SORT_RANDOM:
+            $sql .= "RAND()" . $orderExtend;
+            break;
+    }
+    $sql .= " card.name";
+    $sql .= " LIMIT 9999";
     $result = $database->query($sql, $replacements);
     if (count($result) > 0) {
         return json_encode(array(

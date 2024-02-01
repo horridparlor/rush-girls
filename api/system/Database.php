@@ -56,4 +56,20 @@ class Database
     public static function arrify(array $ids): string {
         return "(".implode(", ", $ids).")";
     }
+
+    public static function getIntParam(string $id, mixed $default = null) {
+        $value = $_GET[$id];
+        if (is_null($value)) {
+            return $default;
+        }
+        return intval($value);
+    }
+
+    public static function getStringParam(string $id, mixed $default = null) {
+        $value = $_GET[$id];
+        if (is_null($value)) {
+            return $default;
+        }
+        return urldecode($value);
+    }
 }

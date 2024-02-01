@@ -5,8 +5,23 @@ const API_ENDPOINT = '../api/rush-girls/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
 
+const SELECTOR_EXPANSION = 'expansion-filter';
+const SELECTOR_SEARCH_STRING = 'search-bar';
+const SELECTOR_MIN_LEVEL = 'min-level';
+const SELECTOR_MAX_LEVEL = 'max-level';
+const SELECTOR_MIN_ATK = 'min-atk';
+const SELECTOR_MAX_ATK = 'max-atk';
+const SELECTOR_MIN_DEF = 'min-def';
+const SELECTOR_MAX_DEF = 'max-def';
+const SELECTOR_CLASS = 'class-selector';
+const SELECTOR_DECK = 'deck-selector';
+const SELECTOR_TYPE = 'card-type-selector';
+const SELECTOR_SPECIAL = 'special-selector';
 const SELECTOR_COST = 'cost-selector';
 const SELECTOR_EFFECT = 'effect-selector';
+const SELECTOR_LEGALITY = 'legality-selector';
+const SELECTOR_SORT = 'sort-selector';
+const SELECTOR_ORDER = 'order-selector';
 
 let currentCardId;
 let cards;
@@ -34,21 +49,23 @@ function showLoadingMessage(show) {
 
 function clearFilters() {
     const filterIds = [
-        'expansion-filter',
-        'search-bar',
-        'min-level',
-        'max-level',
-        'min-atk',
-        'max-atk',
-        'min-def',
-        'max-def',
-        'class-selector',
-        'deck-selector',
-        'card-type-selector',
-        'special-selector',
+        SELECTOR_EXPANSION,
+        SELECTOR_SEARCH_STRING,
+        SELECTOR_MIN_LEVEL,
+        SELECTOR_MAX_LEVEL,
+        SELECTOR_MIN_ATK,
+        SELECTOR_MAX_ATK,
+        SELECTOR_MIN_DEF,
+        SELECTOR_MAX_DEF,
+        SELECTOR_CLASS,
+        SELECTOR_DECK,
+        SELECTOR_TYPE,
+        SELECTOR_SPECIAL,
         SELECTOR_COST,
         SELECTOR_EFFECT,
-        'legality-selector'
+        SELECTOR_LEGALITY,
+        SELECTOR_SORT,
+        SELECTOR_ORDER,
     ];
 
     filterIds.forEach(id => {
@@ -56,23 +73,29 @@ function clearFilters() {
     });
 }
 
+function getDomValue(id) {
+    return document.getElementById(id).value;
+}
+
 function getCards() {
     showLoadingMessage(true);
-    const expansion = document.getElementById('expansion-filter').value;
-    const searchString = document.getElementById('search-bar').value.toLowerCase();
-    const minLevel = document.getElementById('min-level').value;
-    const maxLevel = document.getElementById('max-level').value;
-    const minAtk = document.getElementById('min-atk').value;
-    const maxAtk = document.getElementById('max-atk').value;
-    const minDef = document.getElementById('min-def').value;
-    const maxDef = document.getElementById('max-def').value;
-    const cardClass = document.getElementById('class-selector').value;
-    const cardType = document.getElementById('card-type-selector').value;
-    const deck = document.getElementById('deck-selector').value;
-    const special = document.getElementById('special-selector').value;
-    const cost = document.getElementById(SELECTOR_COST).value;
-    const effect = document.getElementById(SELECTOR_EFFECT).value;
-    const legality = document.getElementById('legality-selector').value;
+    const expansion = getDomValue(SELECTOR_EXPANSION);
+    const searchString = getDomValue(SELECTOR_SEARCH_STRING).toLowerCase();
+    const minLevel = getDomValue(SELECTOR_MIN_LEVEL);
+    const maxLevel = getDomValue(SELECTOR_MAX_LEVEL);
+    const minAtk = getDomValue(SELECTOR_MIN_ATK);
+    const maxAtk = getDomValue(SELECTOR_MAX_ATK);
+    const minDef = getDomValue(SELECTOR_MIN_DEF);
+    const maxDef = getDomValue(SELECTOR_MAX_DEF);
+    const cardClass = getDomValue(SELECTOR_CLASS);
+    const cardType = getDomValue(SELECTOR_TYPE);
+    const deck = getDomValue(SELECTOR_DECK);
+    const special = getDomValue(SELECTOR_SPECIAL);
+    const cost = getDomValue(SELECTOR_COST);
+    const effect = getDomValue(SELECTOR_EFFECT);
+    const legality = getDomValue(SELECTOR_LEGALITY);
+    const sort = getDomValue(SELECTOR_SORT);
+    const order = getDomValue(SELECTOR_ORDER);
 
     const filterChoices = {
       costType: cost,
@@ -95,7 +118,9 @@ function getCards() {
         specialId: special,
         costTypeId: cost,
         effectTypeId: effect,
-        legalityId: legality
+        legalityId: legality,
+        sortId: sort,
+        orderId: order,
     });
     
     const urlParams = new URLSearchParams();
