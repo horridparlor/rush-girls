@@ -1,4 +1,5 @@
 const IMAGES_STORAGE = 'cardImages';
+const FILTERS_STORAGE = 'filters';
 const API_ENDPOINT = '../api/rush-girls/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
@@ -12,7 +13,6 @@ function getExpansionIdFromUrl() {
     let expansionId = urlParams.get('expansion');
     if (!expansionId) {
         expansionId = '1';
-        // Optional: Update the URL to include the default expansion parameter
         urlParams.set('expansion', expansionId);
         window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
     }
@@ -39,8 +39,9 @@ function clearFilters() {
         'min-def',
         'max-def',
         'class-selector',
+        'deck-selector',
         'card-type-selector',
-        'is-ace-selector',
+        'special-selector',
         'cost-selector',
         'effect-selector',
         'legality-selector'
@@ -63,7 +64,8 @@ function getCards() {
     const maxDef = document.getElementById('max-def').value;
     const cardClass = document.getElementById('class-selector').value;
     const cardType = document.getElementById('card-type-selector').value;
-    const isAce = document.getElementById('is-ace-selector').value;
+    const deck = document.getElementById('deck-selector').value;
+    const special = document.getElementById('special-selector').value;
     const cost = document.getElementById('cost-selector').value;
     const effect = document.getElementById('effect-selector').value;
     const legality = document.getElementById('legality-selector').value;
@@ -79,7 +81,8 @@ function getCards() {
         maxDef: maxDef,
         classId: cardClass,
         cardTypeId: cardType,
-        isAce: isAce,
+        deckId: deck,
+        specialId: special,
         costTypeId: cost,
         effectTypeId: effect,
         legalityId: legality
@@ -161,11 +164,11 @@ function displayCards() {
     });
 }
 
-function updateCardImage(id) {
+function updateCardImage(id, doForce = false) {
     const cardImages = JSON.parse(sessionStorage.getItem(IMAGES_STORAGE));
     const img = document.getElementById(`card-image-${id}`);
 
-    if (cardImages[id]) {
+    if (cardImages[id] && !doForce) {
         img.src = cardImages[id];
     } else {
         getCardImage(id).then(data => {
@@ -236,6 +239,7 @@ async function updateImageOnServer(cardId, imageData) {
             showToast(`HTTP error uploading image! status: ${response.status}`);
         } else {
             showToast('Image updated successfully');
+            updateCardImage(cardId, true);
         }
     } catch (error) {
         showToast('Error updating image: ' + error);
@@ -285,10 +289,50 @@ function nextPage() {
     }
 }
 
+const fetchFilters = async () => {
+    const filters = JSON.parse(sessionStorage.getItem(FILTERS_STORAGE));
+    if (filters) {
+        updateFilters(filters);
+        return;
+    }
+    try {
+        const response = await fetch(API_ENDPOINT + 'getFilters.php');
+        if (!response.ok) {
+            showToast("Error fetching filters");
+        }
+        const data = await response.json();
+        sessionStorage.setItem(FILTERS_STORAGE, JSON.stringify(data));
+        updateFilters(data);
+    } catch (error) {
+        showToast("Cannot fetch filters");
+    }
+};
+
+function updateFilters(data) {
+    const costTypes = data.costTypes;
+    const effectTypes = data.effectTypes;
+
+    costTypes.forEach(({id, name}) => {
+        addOption(id, name, 'cost-selector');
+    });
+    effectTypes.forEach(({id, name}) => {
+        addOption(id, name, 'effect-selector');
+    });
+}
+
+function addOption(value, message, parentId) {
+    const option = document.createElement('option');
+    option.value = value;
+    option.textContent = message;
+    document.getElementById(parentId).appendChild(option);
+}
+
 window.onload = () => {
     document.getElementById('clear-button').addEventListener('click', clearFilters);
     document.getElementById('search-button').addEventListener('click', getCards);
     modalInit();
+    fetchFilters();
     getCards();
     pageArrowsInit();
+    clearFilters();
 };

@@ -28,7 +28,7 @@ class Database
         }
     }
 
-    public function query(string $sql, array $replacements, ?bool $debug = false): array
+    public function query(string $sql, ?array $replacements = array(), ?bool $debug = false): array
     {
         if ($debug) {
             echo $sql;
@@ -51,5 +51,9 @@ class Database
         } else {
             return ['affected_rows' => $stmt->rowCount()];
         }
+    }
+
+    public static function arrify(array $ids): string {
+        return "(".implode(", ", $ids).")";
     }
 }

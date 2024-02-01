@@ -8,6 +8,7 @@ function getCards()
 {
     $expansionId = $_GET["expansionId"];
     $cardTypeId = $_GET["cardTypeId"];
+    $deckId = $_GET["deckId"];
     $effectTypeId = $_GET["effectTypeId"];
     $costTypeId = $_GET["costTypeId"];
     $classId = $_GET["classId"];
@@ -17,7 +18,7 @@ function getCards()
     $maxAtk = $_GET["maxAtk"];
     $minDef = $_GET["minDef"];
     $maxDef = $_GET["maxDef"];
-    $isAce = $_GET["isAce"];
+    $specialId = $_GET["specialId"];
     $legalityId = $_GET["legalityId"];
     $searchString = $_GET["searchString"];
     
@@ -25,7 +26,7 @@ function getCards()
     $database = new Database();
     $sql = <<<SQL
         SELECT card.id, card.name, type.name as type,
-               class.name as class, card.level, card.atk, card.isAce,
+               class.name as class, card.level, card.atk,
                card.def, material1.id as material1_id, material1.name as material1_name,
                material2.id as material2_id, material2.name as material2_name,
                card.cost, card.effect, card.flavourText
@@ -52,26 +53,52 @@ function getCards()
         $sql .= " AND card.expansion_id = :expansionId";
     }
     if ($cardTypeId !== null) {
-        $sql .= " AND (
-            card.type_id = :cardTypeId
-            OR card.type_id = :equalTypeId
-        )";
         $cardTypeId = intval($cardTypeId);
-        $equalTypeId = match ($cardTypeId) {
-            CARD_TYPE_NORMAL => CARD_TYPE_PENDULUM,
-            CARD_TYPE_TRAP => CARD_TYPE_RITUAL,
-            CARD_TYPE_MONSTER => CARD_TYPE_EFFECT,
-            default => $cardTypeId,
-        };
-        $cardTypeId = match ($cardTypeId) {
-            CARD_TYPE_MONSTER => CARD_TYPE_NORMAL,
-            CARD_TYPE_NORMAL_TRAP => CARD_TYPE_TRAP,
-            default => $cardTypeId,
-        };
-        $replacements = array_merge($replacements, array(
-            'cardTypeId' => ['value' => $cardTypeId, 'type' => PDO::PARAM_INT],
-            'equalTypeId' => ['value' => $equalTypeId, 'type' => PDO::PARAM_INT]
-        ));
+        switch ($cardTypeId) {
+            case CARD_TYPE_MONSTER:
+                $sql .= CARD_TYPE_IN . Database::arrify(array(
+                        CARD_TYPE_NORMAL,
+                        CARD_TYPE_EFFECT,
+                        CARD_TYPE_FUSION,
+                        CARD_TYPE_REVENGE
+                    ));
+                break;
+            case CARD_TYPE_BACKROW:
+                $sql .= CARD_TYPE_IN . Database::arrify(array(
+                        CARD_TYPE_SPELL,
+                        CARD_TYPE_TRAP
+                    ));
+                break;
+            case CARD_TYPE_TRAP:
+                $sql .= CARD_TYPE_IN . Database::arrify(array(
+                        CARD_TYPE_TRAP,
+                        CARD_TYPE_RITUAL
+                    ));
+                break;
+            default:
+                $sql .= " AND card.type_id = :typeId";
+                $replacements['typeId'] = ['value' => $cardTypeId, 'type' => PDO::PARAM_INT];
+        }
+    }
+    if ($deckId !== null) {
+        $deckId = intval($deckId);
+        switch ($deckId) {
+            case DECK_MAIN:
+                $sql .= CARD_TYPE_IN . Database::arrify(array(
+                        CARD_TYPE_NORMAL,
+                        CARD_TYPE_EFFECT,
+                        CARD_TYPE_SPELL,
+                        CARD_TYPE_TRAP
+                    ));
+                break;
+            case DECK_EXTRA:
+                $sql .= CARD_TYPE_IN . Database::arrify(array(
+                        CARD_TYPE_FUSION,
+                        CARD_TYPE_REVENGE,
+                        CARD_TYPE_RITUAL
+                    ));
+                break;
+        }
     }
     if ($effectTypeId !== null) {
         $sql .= " AND (
@@ -131,9 +158,17 @@ function getCards()
         $sql .= " AND card.def <= :maxDef";
         $replacements['maxDef'] = ['value' => $maxDef, 'type' => PDO::PARAM_INT];
     }
-    if ($isAce !== null) {
-        $sql .= " AND card.isAce = :isAce";
-        $replacements['isAce'] = ['value' => $isAce, 'type' => PDO::PARAM_INT];
+    if ($specialId !== null) {
+        $specialId = intval($specialId);
+        if ($specialId == 4) {
+            $sql .= " AND (
+                card.special_id IS NULL
+                OR card.special_id != 1
+            ) ";
+        } else {
+            $sql .= " AND card.special_id = :specialId";
+            $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
+        }
     }
     if ($legalityId !== null) {
         if ($legalityId == 0) {
