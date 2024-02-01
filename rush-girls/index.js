@@ -1,8 +1,12 @@
 const IMAGES_STORAGE = 'cardImages';
-const FILTERS_STORAGE = 'filters';
+const FILTER_OPTIONS_STORAGE = 'filterOptions'
+const FILTER_CHOICES_STORAGE = 'filtersChoices';
 const API_ENDPOINT = '../api/rush-girls/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
+
+const SELECTOR_COST = 'cost-selector';
+const SELECTOR_EFFECT = 'effect-selector';
 
 let currentCardId;
 let cards;
@@ -42,8 +46,8 @@ function clearFilters() {
         'deck-selector',
         'card-type-selector',
         'special-selector',
-        'cost-selector',
-        'effect-selector',
+        SELECTOR_COST,
+        SELECTOR_EFFECT,
         'legality-selector'
     ];
 
@@ -66,9 +70,15 @@ function getCards() {
     const cardType = document.getElementById('card-type-selector').value;
     const deck = document.getElementById('deck-selector').value;
     const special = document.getElementById('special-selector').value;
-    const cost = document.getElementById('cost-selector').value;
-    const effect = document.getElementById('effect-selector').value;
+    const cost = document.getElementById(SELECTOR_COST).value;
+    const effect = document.getElementById(SELECTOR_EFFECT).value;
     const legality = document.getElementById('legality-selector').value;
+
+    const filterChoices = {
+      costType: cost,
+      effectType: effect
+    };
+    storeSession(FILTER_CHOICES_STORAGE, filterChoices);
 
     const rawParams = new URLSearchParams({
         expansionId: expansion,
@@ -138,11 +148,19 @@ function showModal(imageSrc, card) {
     };
 }
 
+function storeSession(id, data) {
+    sessionStorage.setItem(id, JSON.stringify(data));
+}
+
+function loadSession(id) {
+    return JSON.parse(sessionStorage.getItem(id));
+}
+
 function displayCards() {
     const container = document.getElementById('card-container');
     container.innerHTML = '';
-    if (!sessionStorage.getItem(IMAGES_STORAGE)) {
-        sessionStorage.setItem(IMAGES_STORAGE, JSON.stringify({}));
+    if (!loadSession(IMAGES_STORAGE)) {
+        storeSession(IMAGES_STORAGE, {});
     }
     const startIndex = currentPage * CARDS_PER_PAGE
     cardsOnPage = cards.slice(startIndex, startIndex + CARDS_PER_PAGE );
@@ -165,7 +183,7 @@ function displayCards() {
 }
 
 function updateCardImage(id, doForce = false) {
-    const cardImages = JSON.parse(sessionStorage.getItem(IMAGES_STORAGE));
+    const cardImages = loadSession(IMAGES_STORAGE);
     const img = document.getElementById(`card-image-${id}`);
 
     if (cardImages[id] && !doForce) {
@@ -176,7 +194,7 @@ function updateCardImage(id, doForce = false) {
             img.src = imageData;
 
             cardImages[id] = imageData;
-            sessionStorage.setItem(IMAGES_STORAGE, JSON.stringify(cardImages));
+            storeSession(IMAGES_STORAGE, cardImages);
         });
     }
 }
@@ -290,7 +308,7 @@ function nextPage() {
 }
 
 const fetchFilters = async () => {
-    const filters = JSON.parse(sessionStorage.getItem(FILTERS_STORAGE));
+    const filters = loadSession(FILTER_OPTIONS_STORAGE);
     if (filters) {
         updateFilters(filters);
         return;
@@ -301,7 +319,7 @@ const fetchFilters = async () => {
             showToast("Error fetching filters");
         }
         const data = await response.json();
-        sessionStorage.setItem(FILTERS_STORAGE, JSON.stringify(data));
+        sessionStorage.setItem(FILTER_OPTIONS_STORAGE, JSON.stringify(data));
         updateFilters(data);
     } catch (error) {
         showToast("Cannot fetch filters");
@@ -311,13 +329,24 @@ const fetchFilters = async () => {
 function updateFilters(data) {
     const costTypes = data.costTypes;
     const effectTypes = data.effectTypes;
+    const filterChoices = loadSession(FILTER_CHOICES_STORAGE);
 
     costTypes.forEach(({id, name}) => {
-        addOption(id, name, 'cost-selector');
+        addOption(id, name, SELECTOR_COST);
     });
     effectTypes.forEach(({id, name}) => {
-        addOption(id, name, 'effect-selector');
+        addOption(id, name, SELECTOR_EFFECT);
     });
+
+    if (filterChoices) {
+        setFilter(SELECTOR_COST, filterChoices.costType);
+        setFilter(SELECTOR_EFFECT, filterChoices.effectType);
+    }
+    getCards();
+}
+
+function setFilter(id, value) {
+    document.getElementById(id).value = value;
 }
 
 function addOption(value, message, parentId) {
@@ -331,8 +360,6 @@ window.onload = () => {
     document.getElementById('clear-button').addEventListener('click', clearFilters);
     document.getElementById('search-button').addEventListener('click', getCards);
     modalInit();
-    fetchFilters();
-    getCards();
     pageArrowsInit();
-    clearFilters();
+    fetchFilters();
 };
