@@ -2,3 +2,5 @@
 .env
 documentation/
 *.zip
+.htaccess
+privacy/
