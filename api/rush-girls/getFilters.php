@@ -1,7 +1,10 @@
 <?php
+
+use system\Database;
+
 header('Content-Type: application/json');
 
-include("../system/Database.php");
+include("system/Database.php");
 
 function getFilters()
 {

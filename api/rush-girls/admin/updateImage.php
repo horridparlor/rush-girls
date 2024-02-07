@@ -1,7 +1,8 @@
 <?php
-header('Content-Type: application/json');
 
-include("../../system/Database.php");
+use system\Database;
+
+header('Content-Type: application/json');
 
 function updateImage()
 {

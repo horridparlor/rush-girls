@@ -1,5 +1,6 @@
 <?php
 
+namespace system;
 require_once 'loadEnv.php';
 
 class Database
@@ -21,9 +22,9 @@ class Database
         $dsn = "mysql:host=$host;dbname=$dbname;charset=utf8mb4";
 
         try {
-            $this->pdo = new PDO($dsn, $user, $pass);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch (PDOException $e) {
+            $this->pdo = new \PDO($dsn, $user, $pass);
+            $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+        } catch (\PDOException $e) {
             die("Failed to connect to DATABASE: " . $e->getMessage());
         }
     }
@@ -43,21 +44,23 @@ class Database
         }
 
         if (!$stmt->execute()) {
-            throw new Exception('PDO statement execution failed: ' . $stmt->errorInfo()[2]);
+            throw new \Exception('PDO statement execution failed: ' . $stmt->errorInfo()[2]);
         }
 
         if ($stmt->columnCount() > 0) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } else {
             return ['affected_rows' => $stmt->rowCount()];
         }
     }
 
-    public static function arrify(array $ids): string {
-        return "(".implode(", ", $ids).")";
+    public static function arrify(array $ids): string
+    {
+        return "(" . implode(", ", $ids) . ")";
     }
 
-    public static function getIntParam(string $id, mixed $default = null) {
+    public static function getIntParam(string $id, mixed $default = null)
+    {
         $value = $_GET[$id];
         if (is_null($value)) {
             return $default;
@@ -65,7 +68,8 @@ class Database
         return intval($value);
     }
 
-    public static function getStringParam(string $id, mixed $default = null) {
+    public static function getStringParam(string $id, mixed $default = null)
+    {
         $value = $_GET[$id];
         if (is_null($value)) {
             return $default;
