@@ -4,3 +4,4 @@ documentation/
 *.zip
 .htaccess
 privacy/
+*error_log
