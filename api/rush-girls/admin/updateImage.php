@@ -4,6 +4,7 @@ use system\Database;
 
 header('Content-Type: application/json');
 
+include("../system/Database.php");
 function updateImage()
 {
     $cardId = $_POST['cardId'];
