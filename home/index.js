@@ -1,7 +1,7 @@
 const IMAGES_STORAGE = 'cardImages';
 const FILTER_OPTIONS_STORAGE = 'filterOptions'
 const FILTER_CHOICES_STORAGE = 'filtersChoices';
-const API_ENDPOINT = '../api/rush-girls/';
+const API_ENDPOINT = '../api/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
 
@@ -99,7 +99,8 @@ function getCards() {
 
     const filterChoices = {
       costType: cost,
-      effectType: effect
+      effectType: effect,
+      expansion: expansion,
     };
     storeSession(FILTER_CHOICES_STORAGE, filterChoices);
 
@@ -354,6 +355,7 @@ const fetchFilters = async () => {
 function updateFilters(data) {
     const costTypes = data.costTypes;
     const effectTypes = data.effectTypes;
+    const expansions = data.expansions;
     const filterChoices = loadSession(FILTER_CHOICES_STORAGE);
 
     costTypes.forEach(({id, name}) => {
@@ -362,10 +364,14 @@ function updateFilters(data) {
     effectTypes.forEach(({id, name}) => {
         addOption(id, name, SELECTOR_EFFECT);
     });
+    expansions.forEach(({id, name}) => {
+       addOption(id, name, SELECTOR_EXPANSION);
+    });
 
     if (filterChoices) {
         setFilter(SELECTOR_COST, filterChoices.costType);
         setFilter(SELECTOR_EFFECT, filterChoices.effectType);
+        setFilter(SELECTOR_EXPANSION, filterChoices.expansion);
     }
     getCards();
 }

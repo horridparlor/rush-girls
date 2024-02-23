@@ -20,14 +20,17 @@ function getFilters()
     SQL;
     $costTypeQuery = str_replace(':tableName', 'costType', $sql);
     $effectTypeQuery = str_replace(':tableName', 'effectType', $sql);
+    $expansionQuery = str_replace(':tableName', 'expansion', $sql);
 
     $costTypes = $database->query($costTypeQuery);
     $effectTypes = $database->query($effectTypeQuery);
+    $expansions = $database->query($expansionQuery);
     if (count($costTypes) > 0 && count($effectTypes) > 0) {
         return json_encode(array(
             "status" => "Success",
             "costTypes" => $costTypes,
-            "effectTypes" => $effectTypes
+            "effectTypes" => $effectTypes,
+            "expansions" => $expansions,
         ));
     } else {
         return json_encode(array("status" => "Did not find all filters"));
