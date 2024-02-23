@@ -1,4 +1,3 @@
-const IMAGES_STORAGE = 'cardImages';
 const FILTER_OPTIONS_STORAGE = 'filterOptions'
 const FILTER_CHOICES_STORAGE = 'filtersChoices';
 const API_ENDPOINT = '../api/';
@@ -185,9 +184,6 @@ function loadSession(id) {
 function displayCards() {
     const container = document.getElementById('card-container');
     container.innerHTML = '';
-    if (!loadSession(IMAGES_STORAGE)) {
-        storeSession(IMAGES_STORAGE, {});
-    }
     const startIndex = currentPage * CARDS_PER_PAGE
     cardsOnPage = cards.slice(startIndex, startIndex + CARDS_PER_PAGE );
     cardsOnPage.forEach(card => {
@@ -208,21 +204,12 @@ function displayCards() {
     });
 }
 
-function updateCardImage(id, doForce = false) {
-    const cardImages = loadSession(IMAGES_STORAGE);
+function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
 
-    if (cardImages[id] && !doForce) {
-        img.src = cardImages[id];
-    } else {
-        getCardImage(id).then(data => {
-            const imageData = 'data:image/jpeg;base64,' + data;
-            img.src = imageData;
-
-            cardImages[id] = imageData;
-            storeSession(IMAGES_STORAGE, cardImages);
-        });
-    }
+    getCardImage(id).then(data => {
+        img.src = 'data:image/jpeg;base64,' + data;
+    });
 }
 
 function getCardImage(cardId) {
@@ -283,7 +270,7 @@ async function updateImageOnServer(cardId, imageData) {
             showToast(`HTTP error uploading image! status: ${response.status}`);
         } else {
             showToast('Image updated successfully');
-            updateCardImage(cardId, true);
+            updateCardImage(cardId);
         }
     } catch (error) {
         showToast('Error updating image: ' + error);
