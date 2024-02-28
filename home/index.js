@@ -225,7 +225,13 @@ function updateCardImage(id) {
 
 function getCardImagePath(id) {
     const card = cardsMap.get(id);
-    return card.expansion + '/' + card.productName;
+    return card.expansion + '/' + formatCardName(card.name);
+}
+
+function formatCardName(name) {
+    return name.replace(/[^a-zA-Z\s]/g, '').split(' ').map((word, index) =>
+        index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join('');
 }
 
 function modalInit() {
