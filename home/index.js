@@ -385,10 +385,22 @@ function addOption(value, message, parentId) {
     document.getElementById(parentId).appendChild(option);
 }
 
+function initSearchSubmit() {
+    var searchBar = document.getElementById('search-bar');
+
+    searchBar.addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            document.getElementById('search-button').click();
+        }
+    });
+}
+
 window.onload = () => {
     document.getElementById('clear-button').addEventListener('click', clearFilters);
     document.getElementById('search-button').addEventListener('click', getCards);
     modalInit();
     pageArrowsInit();
     fetchFilters();
+    initSearchSubmit();
 };
