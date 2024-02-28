@@ -167,8 +167,14 @@ function getCards()
                 card.special_id IS NULL
                 OR card.special_id != " . IS_ACE .
             ") ";
-        } else {
-            $sql .= " AND card.special_id = :specialId";
+        }
+        else {
+            $sql .= $specialId == IS_ACE ?
+                " AND (
+                    card.special_id = :specialId
+                    OR card.isAce = 1
+                )"
+                : " AND card.special_id = :specialId";
             $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
         }
     }
