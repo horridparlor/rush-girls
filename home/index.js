@@ -29,17 +29,6 @@ let cards;
 let cardsMap;
 let currentPage;
 
-function getExpansionIdFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let expansionId = urlParams.get('expansion');
-    if (!expansionId) {
-        expansionId = '1';
-        urlParams.set('expansion', expansionId);
-        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
-    }
-    return expansionId;
-}
-
 function showLoadingMessage(show) {
     const loadingMessage = document.getElementById('loading-message');
     if (show) {
@@ -230,6 +219,8 @@ function getCardImagePath(id) {
 
 function formatString(name) {
     return name
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
         .replace(/-/g, ' ')
         .replace(/[^a-zA-Z0-9\s]/g, '')
         .split(' ')
