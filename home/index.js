@@ -230,6 +230,7 @@ function getCardImagePath(id) {
 
 function formatString(name) {
     return name
+        .replace(/-/g, ' ')
         .replace(/[^a-zA-Z0-9\s]/g, '')
         .split(' ')
         .map((word, index) =>
