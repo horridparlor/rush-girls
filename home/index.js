@@ -230,7 +230,7 @@ function getCardImagePath(id) {
 
 function formatString(name) {
     return name
-        .replace(/[^a-zA-Z\s]/g, '')
+        .replace(/[^a-zA-Z0-9\s]/g, '')
         .split(' ')
         .map((word, index) =>
             word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
