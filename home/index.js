@@ -3,6 +3,8 @@ const FILTER_CHOICES_STORAGE = 'filtersChoices';
 const API_ENDPOINT = '../api/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
+const IMAGES_ENDPOINT = API_ENDPOINT + 'assets/';
+const PNG = '.png';
 
 const SELECTOR_EXPANSION = 'expansion-filter';
 const SELECTOR_SEARCH_STRING = 'search-bar';
@@ -24,6 +26,7 @@ const SELECTOR_ORDER = 'order-selector';
 
 let currentCardId;
 let cards;
+let cardsMap;
 let currentPage;
 
 function getExpansionIdFromUrl() {
@@ -139,6 +142,7 @@ function getCards() {
                 cardContainer.innerHTML = '<div class="no-cards-found">No cards found</div>';
             } else {
                 cards = data.cards;
+                cardsMap = toMap(cards);
                 currentPage = 0;
                 displayCards();
             }
@@ -149,6 +153,16 @@ function getCards() {
         .finally(() => {
             showLoadingMessage(false);
         });
+}
+
+function toMap(items) {
+    const map = new Map();
+    items.forEach(item => {
+        if(item.id !== undefined) {
+            map.set(item.id, item);
+        }
+    });
+    return map;
 }
 
 function showModal(imageSrc, card) {
@@ -206,26 +220,12 @@ function displayCards() {
 
 function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
-
-    getCardImage(id).then(data => {
-        img.src = 'data:image/jpeg;base64,' + data;
-    });
+    img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
 }
 
-function getCardImage(cardId) {
-    return fetch(API_ENDPOINT + `getCardImage.php?cardId=${cardId}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network failure.');
-            }
-            return response.json();
-        })
-        .then(data => {
-            return data.imageData;
-        })
-        .catch(error => {
-            console.error('Error fetching card image:', error);
-        });
+function getCardImagePath(id) {
+    const card = cardsMap.get(id);
+    return card.expansion + '/' + card.productName;
 }
 
 function modalInit() {

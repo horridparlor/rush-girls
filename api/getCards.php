@@ -30,11 +30,11 @@ function getCards()
     
     $database = new Database();
     $sql = <<<SQL
-        SELECT card.id, card.name, type.name as type,
+        SELECT card.id, card.name, card.productName, type.name as type,
                class.name as class, card.level, card.atk,
                card.def, material1.id as material1_id, material1.name as material1_name,
                material2.id as material2_id, material2.name as material2_name,
-               card.cost, card.effect, card.flavourText
+               card.cost, card.effect, card.flavourText, expansion.name AS expansion
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
