@@ -210,6 +210,15 @@ function displayCards() {
 function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
     img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
+    setBanned(img, cardsMap.get(id).isBanned === 1);
+}
+
+function setBanned(img, isBanned) {
+    if (isBanned) {
+        img.style.filter = 'grayscale(100%)';
+    } else {
+        img.style.filter = '';
+    }
 }
 
 function getCardImagePath(id) {

@@ -22,7 +22,7 @@ function getCards()
     $minDef = Database::getIntParam("minDef");
     $maxDef = Database::getIntParam("maxDef");
     $specialId = Database::getIntParam("specialId");
-    $legalityId = Database::getIntParam("legalityId");
+    $isBanned = Database::getIntParam("legalityId");
     $searchString = Database::getStringParam("searchString");
     $sortId = Database::getIntParam("sortId");
     $orderId = Database::getIntParam("orderId");
@@ -34,7 +34,8 @@ function getCards()
                class.name as class, card.level, card.atk,
                card.def, material1.id as material1_id, material1.name as material1_name,
                material2.id as material2_id, material2.name as material2_name,
-               card.cost, card.effect, card.flavourText, expansion.name AS expansion
+               card.cost, card.effect, card.flavourText, expansion.name AS expansion,
+               card.isBanned
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
@@ -178,12 +179,9 @@ function getCards()
             $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
         }
     }
-    if ($legalityId !== null) {
-        if ($legalityId == 0) {
-            $sql .= " AND 1 = 1";
-        } else {
-            $sql .= " AND 1 = 2";
-        }
+    if ($isBanned !== null) {
+        $sql .= " AND card.isBanned = :isBanned";
+        $replacements['isBanned'] = ['value' => $isBanned, 'type' => PDO::PARAM_INT];
     }
     if ($searchString !== null) {
         $sql .= " AND (
