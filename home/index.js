@@ -1,6 +1,6 @@
 const FILTER_OPTIONS_STORAGE = 'filterOptions'
 const FILTER_CHOICES_STORAGE = 'filtersChoices';
-const API_ENDPOINT = '../api/';
+const API_ENDPOINT = 'https://www.setta.fi/rush-girls/api/';
 const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
 const IMAGES_ENDPOINT = API_ENDPOINT + 'assets/';
