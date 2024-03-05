@@ -211,7 +211,7 @@ function displayCards() {
 function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
     img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
-    setBanned(img, cardsMap.get(id).isBanned === 1);
+    setBanned(img, cardsMap.get(id).isBanned === 2);
 }
 
 function setBanned(img, isBanned) {
