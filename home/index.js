@@ -5,6 +5,7 @@ const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
 const IMAGES_ENDPOINT = API_ENDPOINT + 'assets/';
 const PNG = '.png';
+const BANNED_GRAYSCALE = 90;
 
 const SELECTOR_EXPANSION = 'expansion-filter';
 const SELECTOR_SEARCH_STRING = 'search-bar';
@@ -215,7 +216,7 @@ function updateCardImage(id) {
 
 function setBanned(img, isBanned) {
     if (isBanned) {
-        img.style.filter = 'grayscale(100%)';
+        img.style.filter = `grayscale(${BANNED_GRAYSCALE}%)`;
     } else {
         img.style.filter = '';
     }
