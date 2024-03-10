@@ -34,6 +34,7 @@ function getCards()
                class.name as class, card.level, card.atk,
                card.def, material1.id as material1_id, material1.name as material1_name,
                material2.id as material2_id, material2.name as material2_name,
+               material3.id as material3_id, material3.name as material3_name,
                card.cost, card.effect, card.flavourText, expansion.name AS expansion,
                card.isBanned
         FROM card
@@ -43,6 +44,8 @@ function getCards()
             ON card.primaryMaterial_id = material1.id
         LEFT JOIN card material2
             ON card.secondaryMaterial_id = material2.id
+        LEFT JOIN card material3
+            ON card.tertiaryMaterial_id = material3.id
         JOIN cardType type
             ON card.type_id = type.id
         LEFT JOIN class
@@ -65,13 +68,15 @@ function getCards()
                         CARD_TYPE_NORMAL,
                         CARD_TYPE_EFFECT,
                         CARD_TYPE_FUSION,
-                        CARD_TYPE_REVENGE
+                        CARD_TYPE_REVENGE,
+                        CARD_TYPE_ROYAL
                     ));
                 break;
             case CARD_TYPE_BACKROW:
                 $sql .= CARD_TYPE_IN . Database::arrify(array(
                         CARD_TYPE_SPELL,
-                        CARD_TYPE_TRAP
+                        CARD_TYPE_TRAP,
+                        CARD_TYPE_REVENGE
                     ));
                 break;
             case CARD_TYPE_TRAP:
@@ -99,6 +104,7 @@ function getCards()
                 $sql .= CARD_TYPE_IN . Database::arrify(array(
                         CARD_TYPE_FUSION,
                         CARD_TYPE_REVENGE,
+                        CARD_TYPE_ROYAL,
                         CARD_TYPE_RITUAL
                     ));
                 break;
@@ -191,6 +197,7 @@ function getCards()
             OR LOWER(card.flavourText) LIKE CONCAT('%', :searchString, '%')
             OR LOWER(material1.name) LIKE CONCAT('%', :searchString, '%')
             OR LOWER(material2.name) LIKE CONCAT('%', :searchString, '%')
+            OR LOWER(material3.name) LIKE CONCAT('%', :searchString, '%')
         )";
         $replacements['searchString'] = ['value' => $searchString, 'type' => PDO::PARAM_STR];
     }

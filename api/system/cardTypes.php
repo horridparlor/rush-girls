@@ -7,6 +7,7 @@ const CARD_TYPE_SPELL = 3;
 const CARD_TYPE_TRAP = 4;
 const CARD_TYPE_FUSION = 5;
 const CARD_TYPE_REVENGE = 6;
+const CARD_TYPE_ROYAL = 10;
 const CARD_TYPE_RITUAL = 7;
 const DECK_MAIN = 1;
 const DECK_EXTRA = 2;
