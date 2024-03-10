@@ -234,9 +234,13 @@ function formatString(name) {
         .replace(/-/g, ' ')
         .replace(/[^a-zA-Z0-9\s]/g, '')
         .split(' ')
-        .map((word, index) =>
-            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        )
+        .map((word, index) => {
+            if (word.toUpperCase() === word) {
+                return word;
+            } else {
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            }
+        })
         .join('');
 }
 
