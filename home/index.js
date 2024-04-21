@@ -26,6 +26,7 @@ const SELECTOR_SORT = 'sort-selector';
 const SELECTOR_ORDER = 'order-selector';
 
 const LEGALITY_NEWEST = 1;
+const LEGALITY_ERRATA = 2;
 
 let currentCardId;
 let cards;
@@ -64,7 +65,7 @@ function clearFilters() {
     filterIds.forEach(id => {
         document.getElementById(id).value = '';
     });
-    document.getElementById(SELECTOR_LEGALITY).value = LEGALITY_NEWEST;
+    document.getElementById(SELECTOR_LEGALITY).value = LEGALITY_ERRATA;
 }
 
 function getDomValue(id) {
