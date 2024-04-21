@@ -35,7 +35,8 @@ function getCards()
                card.def, material1.id as material1_id, material1.name as material1_name,
                material2.id as material2_id, material2.name as material2_name,
                material3.id as material3_id, material3.name as material3_name,
-               card.cost, card.effect, card.flavourText, expansion.name AS expansion
+               card.cost, card.effect, card.flavourText, expansion.name AS expansion,
+               card.isErrata
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
