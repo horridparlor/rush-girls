@@ -22,7 +22,7 @@ function getCards()
     $minDef = Database::getIntParam("minDef");
     $maxDef = Database::getIntParam("maxDef");
     $specialId = Database::getIntParam("specialId");
-    $isBanned = Database::getIntParam("legalityId");
+    $isErratad = Database::getIntParam("legalityId");
     $searchString = Database::getStringParam("searchString");
     $sortId = Database::getIntParam("sortId");
     $orderId = Database::getIntParam("orderId");
@@ -36,7 +36,12 @@ function getCards()
                material2.id as material2_id, material2.name as material2_name,
                material3.id as material3_id, material3.name as material3_name,
                card.cost, card.effect, card.flavourText, expansion.name AS expansion,
-               card.isBanned
+               card.isErratad,
+               EXISTS (
+                    SELECT 1
+                    FROM card AS card2
+                    WHERE card2.name = card.name AND card2.expandion_id > card.expansion_id
+                ) AS isErratad
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
@@ -185,9 +190,9 @@ function getCards()
             $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
         }
     }
-    if ($isBanned !== null) {
-        $sql .= " AND card.isBanned = :isBanned";
-        $replacements['isBanned'] = ['value' => $isBanned, 'type' => PDO::PARAM_INT];
+    if ($isErratad !== null) {
+        $sql .= " AND card.isErratad = :isErratad";
+        $replacements['isErratad'] = ['value' => $isErratad, 'type' => PDO::PARAM_INT];
     }
     if ($searchString !== null) {
         $sql .= " AND (

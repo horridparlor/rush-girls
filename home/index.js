@@ -5,7 +5,7 @@ const ADMIN_ENDPOINT = API_ENDPOINT + 'admin/';
 const CARDS_PER_PAGE = 21;
 const IMAGES_ENDPOINT = API_ENDPOINT + 'assets/';
 const PNG = '.png';
-const BANNED_GRAYSCALE = 90;
+const ERRATA_GRAYSCALE = 90;
 
 const SELECTOR_EXPANSION = 'expansion-filter';
 const SELECTOR_SEARCH_STRING = 'search-bar';
@@ -24,6 +24,8 @@ const SELECTOR_EFFECT = 'effect-selector';
 const SELECTOR_LEGALITY = 'legality-selector';
 const SELECTOR_SORT = 'sort-selector';
 const SELECTOR_ORDER = 'order-selector';
+
+const LEGALITY_NEWEST = 1;
 
 let currentCardId;
 let cards;
@@ -55,7 +57,6 @@ function clearFilters() {
         SELECTOR_SPECIAL,
         SELECTOR_COST,
         SELECTOR_EFFECT,
-        SELECTOR_LEGALITY,
         SELECTOR_SORT,
         SELECTOR_ORDER,
     ];
@@ -63,6 +64,7 @@ function clearFilters() {
     filterIds.forEach(id => {
         document.getElementById(id).value = '';
     });
+    document.getElementById(SELECTOR_LEGALITY).value = LEGALITY_NEWEST;
 }
 
 function getDomValue(id) {
@@ -210,13 +212,14 @@ function displayCards() {
 
 function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
+    const cardData = cardsMap.get(id);
     img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
-    setBanned(img, cardsMap.get(id).isBanned === 2);
+    setErrata(img, cardData.isErrata === 1);
 }
 
-function setBanned(img, isBanned) {
-    if (isBanned) {
-        img.style.filter = `grayscale(${BANNED_GRAYSCALE}%)`;
+function setErrata(img, isErrata) {
+    if (isErrata) {
+        img.style.filter = `grayscale(${ERRATA_GRAYSCALE}%)`;
     } else {
         img.style.filter = '';
     }
@@ -371,6 +374,7 @@ function updateFilters(data) {
        addOption(id, name, SELECTOR_EXPANSION);
     });
 
+    clearFilters();
     if (filterChoices) {
         setFilter(SELECTOR_COST, filterChoices.costType);
         setFilter(SELECTOR_EFFECT, filterChoices.effectType);
