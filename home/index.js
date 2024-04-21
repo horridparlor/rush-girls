@@ -26,7 +26,7 @@ const SELECTOR_SORT = 'sort-selector';
 const SELECTOR_ORDER = 'order-selector';
 
 const LEGALITY_NEWEST = 1;
-const LEGALITY_ERRATA = 2;
+const LEGALITY_OLDEST = 2;
 
 let currentCardId;
 let cards;
@@ -215,7 +215,7 @@ function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
     const cardData = cardsMap.get(id);
     img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
-    setErrata(img, cardData.isErrata === LEGALITY_ERRATA);
+    setErrata(img, cardData.isErrata === LEGALITY_OLDEST);
 }
 
 function setErrata(img, isErrata) {
