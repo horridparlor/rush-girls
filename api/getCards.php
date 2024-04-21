@@ -22,7 +22,7 @@ function getCards()
     $minDef = Database::getIntParam("minDef");
     $maxDef = Database::getIntParam("maxDef");
     $specialId = Database::getIntParam("specialId");
-    $isErrata = Database::getIntParam("legalityId");
+    $errataId = Database::getIntParam("legalityId");
     $searchString = Database::getStringParam("searchString");
     $sortId = Database::getIntParam("sortId");
     $orderId = Database::getIntParam("orderId");
@@ -36,7 +36,7 @@ function getCards()
                material2.id as material2_id, material2.name as material2_name,
                material3.id as material3_id, material3.name as material3_name,
                card.cost, card.effect, card.flavourText, expansion.name AS expansion,
-               card.isErrata
+               card.errata_id as isErrata
         FROM card
         JOIN expansion
             ON card.expansion_id = expansion.id
@@ -185,9 +185,9 @@ function getCards()
             $replacements['specialId'] = ['value' => $specialId, 'type' => PDO::PARAM_INT];
         }
     }
-    if ($isErrata !== null) {
-        $sql .= " AND card.isErrata = :isErrata";
-        $replacements['isErrata'] = ['value' => $isErrata, 'type' => PDO::PARAM_INT];
+    if ($errataId !== null) {
+        $sql .= " AND card.errata_id = :errataId";
+        $replacements['errataId'] = ['value' => $errataId, 'type' => PDO::PARAM_INT];
     }
     if ($searchString !== null) {
         $sql .= " AND (
