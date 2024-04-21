@@ -65,7 +65,7 @@ function clearFilters() {
     filterIds.forEach(id => {
         document.getElementById(id).value = '';
     });
-    document.getElementById(SELECTOR_LEGALITY).value = LEGALITY_ERRATA;
+    document.getElementById(SELECTOR_LEGALITY).value = LEGALITY_NEWEST;
 }
 
 function getDomValue(id) {
@@ -215,7 +215,7 @@ function updateCardImage(id) {
     const img = document.getElementById(`card-image-${id}`);
     const cardData = cardsMap.get(id);
     img.src = IMAGES_ENDPOINT + getCardImagePath(id) + PNG;
-    setErrata(img, cardData.isErrata === 1);
+    setErrata(img, cardData.isErrata === LEGALITY_ERRATA);
 }
 
 function setErrata(img, isErrata) {
